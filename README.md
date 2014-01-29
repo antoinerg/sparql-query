@@ -35,6 +35,8 @@ Upon initialization, sparql-query will run every `script[type="text/sparql"]` el
 
 ### Example
 
+Below is an example SPARQL query embedded in the HTML page.
+
 ```html
 <script id="braindead_video" type="text/sparql">
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -47,6 +49,30 @@ SELECT ?url WHERE {
  ?file schema:encodesCreativeWork ?movie .
  ?file schema:embedUrl ?url .
 } LIMIT 1
+</script>
+```
+
+The following script handles the response to this query:
+
+```javascript
+<script type="text/javascript">
+$(document).on("SPARQL:braindead_video", function(evt) {
+		var data = evt.doc;
+		try { // Throws error if url is undefined or empty
+			var url = data['results']['bindings'][0]['url']['value'];
+			if (url == "") {
+				throw exception;
+			}
+			// We have a URL! Let's embed the movie
+			$('#SPARQL-movie-query').html(Handlebars.templates['video']({url:url}));
+		}
+		catch(err) { // Error
+			$.event.trigger({
+            	type: "SPARQL:movie_query:error",
+                doc: {status:"movie_query",statusText:"No embeddable video file for Braindead found in your library"}
+            });
+		}
+});
 </script>
 ```
 
@@ -63,7 +89,7 @@ sparql-query triggers the following custom events:
 
 ### Look and Feel
 
-By default, the widget created by sparql-query is going to look ugly and you'll want to style it to ensure it fits into the theme of your web page. Below is a Handlebars template describing the DOM structure of a sparql-query widget.
+By default, the widget created by sparql-query is going to look ugly and you'll want to style it to ensure it fits into the theme of your web page. Below is a Handlebars template describing the DOM structure of the sparql-query widget.
 
 ```html
 <div id="linkeddata">
