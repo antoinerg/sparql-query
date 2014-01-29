@@ -1,7 +1,14 @@
 sparql-query
 ============
 
-sparql-query is a simple library that aims to unobstrusively enrich web page with linked data by querying SPARQL endpoint aynschronously.
+sparql-query is a jQuery library that helps unobstrusively enrich web pages with linked data by querying SPARQL endpoint.
+
+Why?
+----
+
+My motivation for writing this library is to enable a web page to enrich its content by querying users' SPARQL endpoint (possibly) sitting behind their firewall.
+
+For example, a blog post about a movie could query my private SPARQL endpoint to check whether I have seen the movie or if it is possible to stream it from my internal network. Pages could intelligently adapt their content to visitors and embed copyrighted content in pages without touching the server. Obviously, SPARQL endpoints have to authorize such requests by allowing [CORS][cors]. Fine-grained authorization scheme are available in different triple store.
 
 Disclaimer
 ----------
@@ -18,7 +25,7 @@ Usage
 
 ### Usage
 
-jQuery
+sparql-query will run every `script[type="text/sparql"]` elements against the configured endpoint.
 
 ```html
 <script id="braindead_video" type="text/sparql">
@@ -31,7 +38,8 @@ SELECT ?url WHERE {
  ?movie owl:sameAs <http://www.dbpedialite.org/things/142588#id> .
  ?file schema:encodesCreativeWork ?movie .
  ?file schema:embedUrl ?url .
-} LIMIT 1</script>
+} LIMIT 1
+</script>
 ```
 
 ### Custom Events
@@ -43,3 +51,4 @@ sparql-query triggers the following custom events:
 * `sparql:#id:error` - Trigger if SPARQL query #id fails
 
 [braindead]: http://antoineroygobeil.com/blog/2013/12/17/braindead/
+[cors]: http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
