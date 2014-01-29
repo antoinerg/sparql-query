@@ -26,8 +26,8 @@ window.SPARQL = {
                 $(document).on("SPARQL:" + q.id + ":error", function(evt) {
                   var jqXHR = evt.jqXHR;
                   if (jqXHR.status == 0) {
-                    jqXHR.status = "CORS";
-                    jqXHR.statusText = "No 'Access-Control-Allow-Origin' header is present on the requested resource."
+                    jqXHR.status = "Error";
+                    jqXHR.statusText = "Can't access requested resource."
                   };
                   q.alert(Handlebars.templates['linkeddata_alert']({
                     jqXHR: jqXHR,
@@ -70,7 +70,7 @@ window.SPARQL = {
       });
     },
     run: function() {
-        var errors = [];
+        var error = false;
         $.each(this.queries,function(i,query) {
             var id = query.id;
             var encoded_q = encodeURIComponent(query.q);
@@ -86,63 +86,52 @@ window.SPARQL = {
                   class:"success",
                   jqXHR:{status:"OK",statusText:"Success!"}
                 }));
-                errors.push(false);
             },function(jqXHR){
               console.log(jqXHR)
                 $.event.trigger({
                     type: "SPARQL:" + id + ":error",
                     jqXHR: jqXHR
                 });
-                errors.push(true)
+                error = error || true;
                 query.result(jqXHR.responseText);
             });
         })
-        var failed = this.hasErrors(errors);
-        if (failed) {
+        if (error) {
           $('#linkeddata_logo').removeClass('active');
         } else {
           $('#linkeddata_logo').addClass('active');
         }
         },
     execute: function(query,cb,error_cb) {
-    	var uri = this.getEndpoint() + query;
+      var uri = this.getEndpoint() + "?query=" + query;
         console.log('SPARQL: Requesting ' + uri);
         $.ajax({
             dataType: "json",
             url: uri,
             success: function(data){
-        	   cb(data);
+             cb(data);
             },
             error: function(jqXHR) {
               error_cb(jqXHR);
             }
         })
     },
-    hasErrors: function(err) {
-      var errors = err;
-      for (var i=0;i<this.errors.length;i++) {
-        if (errors[i] == true) {
-          return true
-        }
-      }
-      return false;
-    },
     getEndpoint: function() {
-    	if (localStorage.getItem("SPARQL.endpoint") === null) {
+      if (localStorage.getItem("SPARQL.endpoint") === null) {
             return false;
-		} else {
-    		return localStorage.getItem('SPARQL.endpoint');
-    	}
+    } else {
+        return localStorage.getItem('SPARQL.endpoint');
+      }
     },
     setEndpoint: function(endpoint) {
       if (endpoint === "") {
         return this.clearEndpoint();
       } else {
-		    localStorage.setItem('SPARQL.endpoint',endpoint) ;
+        localStorage.setItem('SPARQL.endpoint',endpoint) ;
         $('#linkeddata_logo').addClass('active');
         //$('#linkeddata_information').removeClass('active');
         this.run();
-		    return true;
+        return true;
       }
     },
     clearEndpoint: function() {

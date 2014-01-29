@@ -1,0 +1,28 @@
+<div id="linkeddata">
+  <a id="linkeddata_logo" href="#">Linked data</a>
+  <div id="linkeddata_information">
+    <form id="linkeddata_form" onsubmit="return false;">
+    	<label for="linkeddata_endpoint">SPARQL endpoint:</label>
+      <input name="linkeddata_endpoint" id="linkeddata_endpoint" type="text" value="{{endpoint}}"/>    
+    </form>
+
+    <div id="linkeddata_queries">
+      <ul>
+    {{#each queries}}
+      <li id="linkeddata_query_{{this.id}}">
+        <a href="#" class="linkeddata_alert">
+        </a>
+        <div class="linkeddata_debug">
+          <div class="linkeddata_result">
+            <pre class="linkeddata_result"></pre>
+          </div>
+          <div class="linkeddata_query">
+          	<textarea rows="15">{{this.q}}</textarea>
+          </div>
+        </div>
+      </li>
+    {{/each}}
+      </ul>
+    </div>
+  </div>
+</div>
