@@ -8,12 +8,20 @@ Why?
 
 My motivation for writing this library is to enable a web page to enrich its content by querying users' SPARQL endpoint (possibly) sitting behind their firewall.
 
-For example, a blog post about a movie could query my private SPARQL endpoint to check whether I have seen the movie or if it is possible to stream it from my internal network. Pages could intelligently adapt their content to visitors and embed copyrighted content in pages without touching the server. Obviously, SPARQL endpoints have to authorize such requests by allowing [CORS][cors]. Fine-grained authorization scheme are available in different triple store.
+For example, a blog post about a movie could query my private SPARQL endpoint to check whether I have seen the movie or if it is possible to stream it from my internal network. Pages could intelligently adapt their content to visitors and embed copyrighted content in pages without touching the server. Obviously, SPARQL endpoints have to authorize such requests by allowing [CORS][cors]. Fine-grained authorization schemes are available in different triple store.
 
 Disclaimer
 ----------
 
 I am not a JS developer and this code probably won't follow best practice. Be advised!
+
+Features
+--------
+
+* User can specify location of their SPARQL endpoint
+* SPARQL queries can be inspected by the user to see the vocabulary used
+* Status of the queries are displayed
+* Integration with sparql-query is done through jQuery events
 
 Examples
 --------
@@ -23,9 +31,9 @@ For a working example of sparql-query, visit this [example page][braindead]
 Usage
 -----
 
-### Usage
+Upon initialization, sparql-query will run every `script[type="text/sparql"]` elements against the configured endpoint.
 
-sparql-query will run every `script[type="text/sparql"]` elements against the configured endpoint.
+### Example
 
 ```html
 <script id="braindead_video" type="text/sparql">
@@ -52,3 +60,37 @@ sparql-query triggers the following custom events:
 
 [braindead]: http://antoineroygobeil.com/blog/2013/12/17/braindead/
 [cors]: http://en.wikipedia.org/wiki/Cross-origin_resource_sharing
+
+### Look and Feel
+
+By default, the widget created by sparql-query is going to look ugly and you'll want to style it to ensure it fits into the theme of your web page. Below is a Handlebars template describing the DOM structure of a sparql-query widget.
+
+```html
+<div id="linkeddata">
+  <a id="linkeddata_logo" href="#">Linked data</a>
+  <div id="linkeddata_information">
+    <form id="linkeddata_form" onsubmit="return false;">
+    	<label for="linkeddata_endpoint">SPARQL endpoint:</label>
+      <input name="linkeddata_endpoint" id="linkeddata_endpoint" type="text" value="{{endpoint}}"/>    
+    </form>
+
+    <div id="linkeddata_queries">
+      <ul>
+      {{#each queries}}
+      <li id="linkeddata_query_{{this.id}}">
+        <a href="#" class="linkeddata_alert"></a>
+        <div class="linkeddata_debug">
+          <div class="linkeddata_result">
+            <pre class="linkeddata_result"></pre>
+          </div>
+          <div class="linkeddata_query">
+          	<textarea rows="15">{{this.q}}</textarea>
+          </div>
+        </div>
+      </li>
+    {{/each}}
+      </ul>
+    </div>
+  </div>
+</div>
+```
