@@ -1,7 +1,48 @@
-$(document).ready(function() {
-    SPARQL.initialize();
-    SPARQL.run();
-})
+(function () {
+    var SPARQL = function (arg) {
+        // ensure to use the `new` operator
+        if (!(this instanceof SPARQL)) return new SPARQL(arg);
+        window.SPARQL = this;
+        this.widget = isUndefined(arg.widget) ? true : arg.widget;
+        this.target = isUndefined(arg.target) ? 'body' : arg.target;
+        var queries = [];
+        this.queries = queries;
+        if (this.widget) {
+            $(this.target).prepend('Linkeddata<br/>');
+        }
+
+        var initialize = function () {
+            var s = $('script[type="text/sparql"]');
+            $.each(s,function(i,q) {
+                queries.push(new query(q));
+            })
+        }
+        
+        initialize();
+        
+        //this.queries = function() {return queries)};
+    }
+
+    var query = function (q) {
+        this.el = q;
+        this.id = $(q).attr('id');
+        this.alert = function(msg) {
+         alert(msg);   
+        }
+    }
+
+    var isUndefined = function (obj) {
+        return typeof obj === 'undefined';
+    }
+
+    window.SPARQL = SPARQL;
+
+})();
+
+SPARQL({
+    target: 'body',
+    widget: true
+});
 
 window.SPARQL = {
     initialize: function() {

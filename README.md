@@ -52,7 +52,7 @@ SELECT ?url WHERE {
 </script>
 ```
 
-The following script handles the response to this query:
+Integration with sparql-query is done through jQuery events. The following script subscribes to events related to `#braindead_video` and handles the response:
 
 ```javascript
 <script type="text/javascript">
@@ -64,12 +64,12 @@ $(document).on("SPARQL:braindead_video", function(evt) {
 				throw exception;
 			}
 			// We have a URL! Let's embed the movie
-			$('#SPARQL-movie-query').html(Handlebars.templates['video']({url:url}));
+			$('#movie-placeholder').html(Handlebars.templates['video']({url:url}));
 		}
 		catch(err) { // Error
 			$.event.trigger({
-            	type: "SPARQL:movie_query:error",
-                doc: {status:"movie_query",statusText:"No embeddable video file for Braindead found in your library"}
+            	type: "SPARQL:braindead_video:error",
+                doc: {status:"braindead_video",statusText:"No embeddable video file for Braindead found in your library"}
             });
 		}
 });
